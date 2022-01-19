@@ -5,88 +5,187 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dridolfo <dridolfo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/17 16:16:09 by dridolfo          #+#    #+#             */
-/*   Updated: 2022/01/18 19:38:16 by dridolfo         ###   ########.fr       */
+/*   Created: 2022/01/19 16:33:11 by dridolfo          #+#    #+#             */
+/*   Updated: 2022/01/19 20:12:28 by dridolfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include <fcntl.h>
+#include <stdio.h>
+#include <unistd.h>
 
 #ifndef BUFFER_SIZE
-# define BUFFER_SIZE 100
+# define BUFFER_SIZE 10
 #endif
 
-size_t	ft_strnlen(char *s, size_t i)
+size_t	ft_strlen(char *s)
 {
+	size_t	i;
+
+	i = 0;
 	while (s[i] != '\0')
 		i++;
 	return (i);
 }
 
-void	ft_strlcat(char *s1, char *s2, int j, size_t len)
+void	ft_strlcat(char *dst, char *src, size_t dstsize)
 {
 	size_t	i;
+	size_t	j;
 
+	j = ft_strlen(dst);
 	i = 0;
-	if (len == -1)
+	while (src[i] != '\0' && j < dstsize)
 	{
-		while (s2[2] != '\0')
-		{
-			s1[i] = s2[j];
-			i++;
-			j++;
-		}
+		dst[j] = src[i];
+		i++;
+		j++;
 	}
-	else
-	{
-		while (len > i)
-		{
-			s1[i] = s2[j];
-			i++;
-			j++;
-		}
-	}
-	s1[i] = '\0';
+	dst[j] = '\0';
 }
 
-static size_t	get_line(char *str, int i)
+static char	*ft_formatting(char *s1, char*s2)
 {
-	while (str[i])
+	char	*tmp;
+	size_t	i;
+	size_t	j;
+
+	tmp = (char *) malloc(ft_strlen(s2) + ft_strlen(s1) + 1);
+	i = 0;
+	while (s1[i] != '\0')
 	{
-		if (str[i] == '\n' || str[i] == '\0')
-			return (i + 1);
+		tmp[i] = s1[i];
 		i++;
 	}
-	return (NULL);
+	j = 0;
+	while (s2[j] != '\0')
+	{
+		tmp[i] = s2[j];
+		i++;
+		j++;
+	}
+	tmp[i] = '\0';
+	return (tmp);
+}
+
+static char	*ft_recover(char *s)
+{
+	size_t	i;
+	char	*out;
+
+	i = ft_strlen(s);
+	out = (char *) malloc(i + 1);
+	i = 0;
+	while (s[i] != '\0')
+	{
+		out[i] = s[i];
+		i++;
+	}
+	return (out);
+}
+
+static int	ft_find_nl(char *s)
+{
+	size_t	ind;
+
+	ind = 0;
+	while (s[ind] != '\0')
+	{
+		if (s[ind] == '\n')
+			break ;
+		ind++;
+	}
+	return (ind);
+}
+
+static char	*ft_take_it(int fd, char *buff)
+{
+	size_t	i;
+	size_t	j;
+	size_t	f;
+	char	*stor;
+	char	*cac;
+
+	printf("take_it\n");
+	fflush(stdout);
+	f = read(fd, buff, BUFFER_SIZE);
+	if (f > 0)
+	{
+		printf("take_it2\n");
+		fflush(stdout);
+		i = ft_find_nl(buff);
+		printf("%d - %c\n", i, buff[i]);
+		fflush(stdout);
+		j = i;
+		while (buff[i] != '\n' && fd > 0)
+		{
+			printf("take_it_buff\n");
+			fflush(stdout);
+			cac = (char *) malloc(j + 1);
+			if (stor)
+			{
+				printf("take_it_1strlcat\n");
+				fflush(stdout);
+				ft_strlcat(cac, stor, j + 1);
+				free(stor);
+				stor = (char *) malloc(j + i + 1);
+				printf("take_it_2strlcat\n");
+				fflush(stdout);
+				ft_strlcat(stor, cac, j + 1);
+				free(cac);
+			}
+			else
+				stor = (char *) malloc(j + 1);
+			printf("take_it_3strlcat\n");
+			fflush(stdout);
+			ft_strlcat(stor, buff, i + j + 1);
+			j += i;
+			f = read(fd, buff, BUFFER_SIZE);
+			i = ft_find_nl(buff);
+		}
+		printf("take_it_3\n");
+		fflush(stdout);
+		if (!stor)
+		{
+			stor = (char *) malloc(j);
+			ft_strlcat(stor, buff, i + j);
+		}
+		else
+		{
+			cac = (char *) malloc(j);
+			ft_strlcat(cac, stor, j);
+			stor = (char *) malloc(i + j);
+			ft_strlcat(stor, cac, j);
+			ft_strlcat(stor, buff, i + j);
+			free(cac);
+		}
+	}
+	return (stor);
 }
 
 char	*get_next_line(int fd)
 {
-	static int			line = 0;
-	static char			*o;
-	char				*s;
-	size_t				f;
-	size_t				i;
+	static int		line = 0;
+	static char		*buff;
+	char			*out;
 
-	if (o != NULL)
+	printf("ppp\n");
+	fflush(stdout);
+	if (buff)
+		out = ft_recover(buff);
+	printf("ppp2\n");
+	fflush(stdout);
+	buff = (char *) malloc(BUFFER_SIZE + 1);
+	if (out)
+		out = ft_formatting(out, ft_take_it(fd, buff));
+	else
 	{
-		i = ft_strnlen(o, (size_t) line);
-		s = (char *) malloc(i + 1);
-		ft_strlcat(s, o, line, -1);
-		free(o);
+		out = ft_take_it(fd, buff);
+		if (out[ft_strlen(out)] != '\0')
+			out[ft_strlen(out)] = '\0';
 	}
-	o = (char *) malloc(BUFFER_SIZE);
-	if (s == NULL)
-
-	f = read(fd, o, BUFFER_SIZE);
-	i = get_line(o, line);
-	s = (char *) malloc(i + 1);
-	ft_strlcat(s, o, line, i);
-	free(o);
-	printf("%d\n", line);
-	line = (int) i;
-	return (s);
+	return (out);
 }
 
 int	main(void)
@@ -97,15 +196,20 @@ int	main(void)
 
 	con = 0;
 	fd = open("test.txt", O_RDONLY);
+	printf("Hello\n");
+	fflush(stdout);
 	while (con < 6)
 	{
 		printf("%d :", con);
+		fflush(stdout);
 		out = get_next_line(fd);
-		printf("%s\n", out);
+		printf("$%s$\n", out);
+		fflush(stdout);
 		free(out);
 		con++;
 	}
 	close(fd);
 	printf("Finished.\n");
+	fflush(stdout);
 	return (0);
 }
