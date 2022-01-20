@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.h                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dridolfo <dridolfo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/20 16:56:40 by dridolfo          #+#    #+#             */
-/*   Updated: 2022/01/20 16:56:41 by dridolfo         ###   ########.fr       */
+/*   Created: 2022/01/20 18:08:53 by dridolfo          #+#    #+#             */
+/*   Updated: 2022/01/20 18:28:38 by dridolfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#ifndef GET_NEXT_LINE_BONUS_H
+# define GET_NEXT_LINE_BONUS_H
 
 # include <stdlib.h>
 # include <fcntl.h>
@@ -21,6 +21,14 @@
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 100
 # endif
+
+typedef struct s_list
+{
+	struct s_list	*prev;
+	int				*fd;
+	char			*buff;
+	struct s_list	*next;
+}					t_clist;
 
 size_t	ft_strlen(char *s);
 int		ft_find_line(char *s);

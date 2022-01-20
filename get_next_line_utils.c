@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dridolfo <dridolfo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/01/20 16:56:50 by dridolfo          #+#    #+#             */
+/*   Updated: 2022/01/20 17:58:26 by dridolfo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "./get_next_line.h"
 
 size_t	ft_strlen(char *s)
@@ -10,22 +22,6 @@ size_t	ft_strlen(char *s)
 	while (s[i] != '\0')
 		i++;
 	return (i);
-}
-
-int	ft_find_line(char *s)
-{
-	int	i;
-
-	i = 0;
-	if (!s)
-		return (0);
-	while (s[i] != '\0')
-	{
-		if (s[i] == '\n')
-			return (1);
-		i++;
-	}
-	return (0);
 }
 
 char	*ft_strmerge(char *buff, char *tmp_buff)
@@ -54,6 +50,22 @@ char	*ft_strmerge(char *buff, char *tmp_buff)
 	s[i] = '\0';
 	free(buff);
 	return (s);
+}
+
+int	ft_find_line(char *s)
+{
+	int	i;
+
+	i = 0;
+	if (!s)
+		return (0);
+	while (s[i] != '\0')
+	{
+		if (s[i] == '\n')
+			return (1);
+		i++;
+	}
+	return (0);
 }
 
 char	*ft_return_line(char *buff)
