@@ -6,65 +6,66 @@
 /*   By: dridolfo <dridolfo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 18:41:56 by dridolfo          #+#    #+#             */
-/*   Updated: 2022/01/20 21:37:04 by dridolfo         ###   ########.fr       */
+/*   Updated: 2022/01/21 20:57:06 by dridolfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./get_next_line_bonus.h"
 
-t_clist	*ft_cr_clist(void)
-{
-	t_clist	*first;
-
-	first = malloc(sizeof(t_clist));
-	first->first = first;
-	first->buff = NULL;
-	first->fd = (int *) -2;
-	first->next = NULL;
-	return (first);
-}
-
-void	ft_newclist(t_clist *dic, int *fd, char *buff)
+t_clist	*ft_newclist(t_clist *dic, int fd, char *buff)
 {
 	t_clist	*elem;
 
-	while (dic->next != NULL)
-		dic = dic->next;
-	elem = malloc(sizeof(t_clist));
-	dic->next = elem;
-	elem->first = dic->first;
-	elem->buff = buff;
-	elem->fd = fd;
+	if (dic != NULL)
+	{
+		while (dic->next != NULL)
+			dic = dic->next;
+		elem = malloc(sizeof(t_clist));
+		if (!elem)
+			return (NULL);
+		elem->first = dic->first;
+		elem->buff = buff;
+		elem->fd = fd;
+		dic->next = elem;
+	}
+	else
+	{
+		elem = malloc(sizeof(t_clist));
+		if (!elem)
+			return (NULL);
+		elem->first = elem;
+		elem->buff = buff;
+		elem->fd = fd;
+		elem->next = NULL;
+	}
+	return (elem);
 }
 
-void	ft_editlist(t_clist *dic, int *fd, char *buff)
-{
-	t_clist	*elem;
-
-	elem = malloc(sizeof(t_clist));
-	while (dic->fd != fd)
-		dic = dic->next;
-	dic->buff = buff;
-}
-
-void	*ft_handler(t_clist *dic, int *fd, char *buff, char meth)
+void	*ft_handler(t_clist *dic, int fd, char *buff, char meth)
 {
 	if (meth == 'r')
 	{
-		/*p = (char *) malloc(1);
-		p[0] = '\0';*/
+		if (dic == NULL)
+			return (NULL);
+		dic = dic->first;
 		while (dic->next != NULL)
 		{
 			if (fd == dic->fd)
 				return (dic->buff);
 			dic = dic->next;
 		}
-		return ((char *) 0);
+		return (NULL);
 	}
 	else if (meth == 'c')
 		ft_newclist(dic, fd, buff);
 	else
-		ft_editlist(dic, fd, buff);
+	{
+		dic = dic->first;
+		while (dic->fd != fd && dic->next != NULL)
+			dic = dic->next;
+		if (dic->fd == fd)
+			dic->buff = buff;
+	}
 	return (NULL);
 }
 
@@ -100,15 +101,13 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (0);
-	if (!dic)
-		dic = ft_cr_clist();
-	buff = ft_handler(dic, &fd, "", 'r');
-	if (buff == (char *) 0)
-		ft_newclist(dic, &fd, buff);
+	buff = ft_handler(dic, fd, "\0", 'r');
+	if (buff == NULL)
+		dic = ft_newclist(NULL, fd, buff);
 	buff = ft_recover(fd, buff);
 	if (!buff)
 		return (NULL);
 	line = ft_return_line(buff);
-	ft_editlist(dic, &fd, ft_prepare_next(buff));
+	ft_handler(dic, fd, ft_prepare_next(buff), 'e');
 	return (line);
 }

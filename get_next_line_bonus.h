@@ -6,7 +6,7 @@
 /*   By: dridolfo <dridolfo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 18:08:53 by dridolfo          #+#    #+#             */
-/*   Updated: 2022/01/20 21:22:00 by dridolfo         ###   ########.fr       */
+/*   Updated: 2022/01/21 20:22:22 by dridolfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 typedef struct s_list
 {
 	struct s_list	*first;
-	int				*fd;
+	int				fd;
 	char			*buff;
 	struct s_list	*next;
 }					t_clist;

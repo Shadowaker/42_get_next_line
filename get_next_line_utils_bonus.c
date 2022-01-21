@@ -6,7 +6,7 @@
 /*   By: dridolfo <dridolfo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 21:25:06 by dridolfo          #+#    #+#             */
-/*   Updated: 2022/01/20 21:25:18 by dridolfo         ###   ########.fr       */
+/*   Updated: 2022/01/21 18:08:03 by dridolfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,5 @@ char	*ft_prepare_next(char *buff)
 	while (buff[i])
 		s[j++] = buff[i++];
 	s[j] = '\0';
-	free(buff);
 	return (s);
 }
